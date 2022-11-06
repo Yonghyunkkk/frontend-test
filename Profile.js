@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Webcam from 'react-webcam'
 import axios from 'axios'
 const WebcamComponent = () => <Webcam />
@@ -8,16 +8,22 @@ const videoConstraints = {
   facingMode: 'user',
 }
 const Profile = () => {
-  const [picture, setPicture] = useState('')
+  let [picture, setPicture] = useState('')
   const webcamRef = React.useRef(null)
   const capture = React.useCallback(() => {
+    console.log('Photo Taken!') 
     const pictureSrc = webcamRef.current.getScreenshot()
     setPicture(pictureSrc)
   })
+
+  useEffect(() => {
+    console.log(picture)
+    axios.post('http://localhost:8000/server',{name:picture}).then(res => console.log(res))
+  }, [picture]);
   return (
     <div>
       <h2 className="mb-5 text-center">
-        React Photo Capture using Webcam Examle
+        React Photo Capture using Webcam Example
       </h2>
       <div>
         {picture == '' ? (
@@ -38,6 +44,7 @@ const Profile = () => {
           <button
             onClick={(e) => {
               e.preventDefault()
+            
               setPicture()
               console.log(picture)
         
@@ -53,7 +60,6 @@ const Profile = () => {
             onClick={(e) => {
               e.preventDefault()
               capture()
-              axios.post('http://localhost:8000/server',{name:picture}).then(res => console.log(res))
             }}
             className="btn btn-danger"
           >
